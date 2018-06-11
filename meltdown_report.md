@@ -2,12 +2,15 @@
 实验环境为 Ubuntu 17.12 内核版本在14.1以上<br>
 首先 [关闭meltdown补丁](https://community.spiceworks.com/topic/2108250-meltdown-patch-disable-fedora-27)
 
-## 流程解读
+## 攻击流程解读
 
 直接运行 
     ./melt.sh
 即可得到结果
 ![](https://github.com/OSH-2018/4-sqrta/blob/master/result.png)<br>
+
+melt.sh的功能是从/proc/kallsyms文件里找到linux_proc_banner的地址，然后make整个文件（因为没有使用proc里的头文件，所以Makefile实际上就只编译了myattack.c为attack），接着将地址传递给attack<br>
+## 攻击代码主流程解读
 对指定地址的内容尝试读取1000次，每次会返回一个猜测的值，然后认为该地址的值位这1000次猜测中最多的<br>
 一次对攻击地址的猜测的全流程参见下面的readbyte函数
 
