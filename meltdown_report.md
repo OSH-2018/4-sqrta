@@ -8,7 +8,7 @@
     ./melt.sh
 即可得到结果
 
-！[](https://github.com/OSH-2018/4-sqrta/blob/master/result.png)
+![](https://github.com/OSH-2018/4-sqrta/blob/master/result.png)
 对指定地址的内容尝试读取1000次，每次会返回一个猜测的值，然后认为该地址的值位这1000次猜测中最多的
 一次攻击的全流程参见下面的readbyte函数
 
