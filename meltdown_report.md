@@ -7,10 +7,9 @@
 直接运行 
     ./melt.sh
 即可得到结果
-
-![](https://github.com/OSH-2018/4-sqrta/blob/master/result.png)
-对指定地址的内容尝试读取1000次，每次会返回一个猜测的值，然后认为该地址的值位这1000次猜测中最多的
-一次攻击的全流程参见下面的readbyte函数
+![](https://github.com/OSH-2018/4-sqrta/blob/master/result.png)<br>
+对指定地址的内容尝试读取1000次，每次会返回一个猜测的值，然后认为该地址的值位这1000次猜测中最多的<br>
+一次对攻击地址的猜测的全流程参见下面的readbyte函数
 
     int readbyte(int fd,char *addr){//运用meltdown原理读取指定地址addr内一个字节的内容
     
@@ -25,7 +24,7 @@
     return reload();
     }   
 
-该函数内每一个函数的详细解释见代码注释，这里只说明攻击流程<br>
+该函数内每一个函数的详细解释见[代码](https://github.com/OSH-2018/4-sqrta/blob/master/myattack.c)内的详细注释，这里只说明攻击流程<br>
 
 check数组是一个全局数组，大小是256*4096，用来观察哪个值的读取时间快来确认攻击地址的值<br>
 首先memset check，这一步非常重要，否则该数组会有一些值存留在cache中<br>
