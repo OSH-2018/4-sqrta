@@ -1,15 +1,16 @@
 # meltdown 实验报告
 实验环境为 Ubuntu 17.12 内核版本在14.1以上<br>
-首先 [关闭meltdown补丁](https://community.spiceworks.com/topic/2108250-meltdown-patch-disable-fedora-27)
+首先 [关闭meltdown补丁](https://community.spiceworks.com/topic/2108250-meltdown-patch-disable-fedora-27)<br>
+报告和注释中proc均指代 https://github.com/paboldin/meltdown-exploit 此github的内容。因为本实验的目的和该github的目的是一样的。
 
 ## 攻击流程解读
 
 直接运行 
-    ./melt.sh
+    sudo ./melt.sh
 即可得到结果
 ![](https://github.com/OSH-2018/4-sqrta/blob/master/result.png)<br>
 
-melt.sh的功能是从/proc/kallsyms文件里找到linux_proc_banner的地址，然后make整个文件（因为没有使用proc里的头文件，所以Makefile实际上就只编译了myattack.c为attack），接着将地址传递给attack<br>
+melt.sh的功能是从/proc/kallsyms文件里找到linux_proc_banner的地址(这一段读取地址用proc里的原话是 “a little cheating" ,因为要sudo获得权限找到越权访问的地址，但是操作系统的kaslr机制每次启动会更改内核的位置。据IAIK的meltdown攻击所说是有办法克服这个问题的，因此这里就省略了找到地址的部分，重点位于越权访问内存)<br>然后make整个文件（因为没有使用proc里的头文件，所以Makefile实际上就只编译了myattack.c为attack），接着将地址传递给attack<br>
 ## 攻击代码主流程解读
 对指定地址的内容尝试读取1000次，每次会返回一个猜测的值，然后认为该地址的值位这1000次猜测中最多的<br>
 一次对攻击地址的猜测的全流程参见下面的readbyte函数
